@@ -2,9 +2,7 @@ import argparse
 import json
 import logging
 
-import numpy as np
 import torch
-from matplotlib import pyplot as plt
 from PIL import Image
 from torchvision import models, transforms
 
@@ -60,28 +58,6 @@ def process_image(image_path: str) -> torch.Tensor:
     tensor_image = transform(im).float()
 
     return tensor_image
-
-
-def imshow(image: torch.Tensor, ax=None):
-    """
-    Displays a PyTorch tensor as an image.
-
-    :param image: Image tensor to display.
-    :param ax: Optional axes to plot on.
-    :param title: Optional title for the plot.
-    """
-    if ax is None:
-        fig, ax = plt.subplots()
-
-    # Undo normalization and convert to numpy
-    image = image.numpy().transpose((1, 2, 0))
-    mean = np.array([0.485, 0.456, 0.406])
-    std = np.array([0.229, 0.224, 0.225])
-    image = std * image + mean
-    image = np.clip(image, 0, 1)
-
-    ax.imshow(image)
-    ax.axis("off")
 
 
 def predict(
@@ -176,23 +152,10 @@ def main():
     # Map classes to category names
     class_names = [cat_to_name[str(cls)] for cls in classes]
 
-    # Display the image and prediction results
-    try:
-        Image.open(args.image_path)
-        _, (ax1, ax2) = plt.subplots(figsize=(6, 9), ncols=1, nrows=2)
-        imshow(
-            process_image(args.image_path),
-            ax=ax1,
-        )
-        ax2.barh(class_names, probabilities, color="red")
-        ax2.set_xlabel("Probability")
-        ax2.set_title(f"Top {args.top_k} Predictions")
-        ax2.set_xlim(0, 1.1)
-        plt.tight_layout()
-        plt.show()
-    except Exception as e:
-        logger.error(f"Error displaying image and predictions: {e}")
-        return
+    # Pretty print the results
+    print("Top K Classes and Probabilities:")
+    for prob, name in zip(probabilities, class_names):
+        print(f"Class: {name}, Probability: {prob * 100:.2f}%")
 
 
 if __name__ == "__main__":
