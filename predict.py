@@ -81,11 +81,16 @@ def predict(
 
     with torch.no_grad():
         output = model(image_tensor)
-        probabilities, classes = torch.topk(torch.softmax(output, dim=1), topk)
+        probabilities, indices = torch.topk(torch.softmax(output, dim=1), topk)
 
-    probabilities, classes = torch.exp(output).topk(topk)
+    probabilities = probabilities[0].tolist()
+    indices = indices[0].tolist()
 
-    return probabilities[0].tolist(), classes[0].add(1).tolist()
+    # Revert indices to class labels
+    idx_to_class = {value: key for key, value in model.class_to_idx.items()}
+    classes = [idx_to_class[idx] for idx in indices]
+
+    return probabilities, classes
 
 
 def main():
