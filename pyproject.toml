@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "udacity-ai-programming-coursework"
+version = "0.1.0"
+description = ""
+authors = ["Marek Zaremba-Pike <marekzp@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "^2.3.1"
+torchvision = "^0.18.1"
+ruff = "^0.5.0"
+black = {extras = ["jupyter"], version = "^24.4.2"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
